@@ -47,7 +47,7 @@ with st.form("form_registro"):
             st.success("Paciente registrado.")
 
 st.subheader("📋 Pacientes registrados")
-st.dataframe(pd.DataFrame(st.session_state.pacientes)
+st.dataframe(pd.DataFrame(st.session_state.pacientes))
 
 # --- Agendamiento de cita
 st.header("📅 Agendar Cita")
