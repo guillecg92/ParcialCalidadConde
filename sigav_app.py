@@ -18,7 +18,7 @@ if 'citas' not in st.session_state:
     st.session_state['citas'] = []
 
 st.set_page_config(page_title="SIGAV - Sistema de Citas", layout="centered")
-st.title("🧠 SIGAV - Gestión de Atenciones Virtuales")
+st.title("🧠 SIGAV - Gestión de Atenciones Virtuales_Corregido")
 
 # --- Registro de paciente
 st.header("👤 Registro de Paciente")
@@ -29,13 +29,25 @@ with st.form("form_registro"):
     registrar = st.form_submit_button("Registrar")
 
     if registrar:
-        # ❌ Errores intencionales: sin validación de vacíos ni duplicados
-        paciente = {"nombre": nombre, "dni": dni, "correo": correo}
-        st.session_state.pacientes.append(paciente)
-        st.success("Paciente registrado.")
+        # Validación del nombre
+        if not nombre.strip():
+            st.error("El nombre no puede estar vacío.")
+        elif not re.match("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", nombre):
+            st.error("El nombre no puede contener números ni caracteres especiales.")
+        # Validación del DNI
+        elif not dni.isdigit() or len(dni) != 8:
+            st.error("El DNI debe contener exactamente 8 dígitos y solo números.")
+        # Validación del correo
+        elif "@" not in correo:
+            st.error("El correo electrónico debe contener el carácter '@'.")
+        else:
+            # Si pasa las validaciones, registrar al paciente
+            paciente = {"nombre": nombre, "dni": dni, "correo": correo}
+            st.session_state.pacientes.append(paciente)
+            st.success("Paciente registrado.")
 
 st.subheader("📋 Pacientes registrados")
-st.dataframe(pd.DataFrame(st.session_state.pacientes))
+st.dataframe(pd.DataFrame(st.session_state.pacientes)
 
 # --- Agendamiento de cita
 st.header("📅 Agendar Cita")
@@ -46,8 +58,14 @@ with st.form("form_cita"):
     profesional = st.selectbox("Profesional", ["Psic. Ana", "Psic. Luis"])
     agendar = st.form_submit_button("Agendar")
 
-    if agendar:
-        # ❌ No se valida si ya tiene cita ese día
+  # Validación de fecha pasada
+        if fecha < datetime.now().date():
+            st.error("No se puede agendar una cita en una fecha pasada.")
+  # Validación de cita duplicada en el mismo día
+        elif any(cita["dni"] == dni_cita and cita["fecha"] == fecha.strftime("%Y-%m-%d") for cita in st.session_state.citas):
+            st.error("Ya existe una cita programada para este paciente en la misma fecha.")
+        else:
+            # Si pasa la validación, agendar la cita
         cita = {
             "dni": dni_cita,
             "fecha": fecha.strftime("%Y-%m-%d"),
@@ -62,5 +80,21 @@ st.dataframe(pd.DataFrame(st.session_state.citas))
 
 # --- Exportar sin validación
 if st.button("🔄 Exportar citas a CSV"):
-    pd.DataFrame(st.session_state.citas).to_csv("citas_exportadas.csv", index=False)
-    st.success("Citas exportadas como 'citas_exportadas.csv'")
+  if st.session_state.citas:
+        # Crear un DataFrame con las citas
+        citas_df = pd.DataFrame(st.session_state.citas)
+
+        # Crear un archivo CSV en memoria
+        csv_buffer = StringIO()
+        citas_df.to_csv(csv_buffer, index=False)
+        csv_data = csv_buffer.getvalue()
+
+        # Agregar un botón de descarga
+        st.download_button(
+            label="📥 Descargar citas como CSV",
+            data=csv_data,
+            file_name="citas_exportadas.csv",
+            mime="text/csv",
+        )
+    else:
+        st.error("No hay citas programadas para exportar.")
