@@ -78,7 +78,7 @@ with st.form("form_cita"):
 st.subheader("📑 Citas Programadas")
 st.dataframe(pd.DataFrame(st.session_state.citas))
 
-# --- Exportar sin validación
+
 if st.button("🔄 Exportar citas a CSV"):
   if st.session_state.citas:
         # Crear un DataFrame con las citas
