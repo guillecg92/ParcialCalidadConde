@@ -10,6 +10,7 @@ Original file is located at
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import re
 
 # Simulación de base de datos en memoria
 if 'pacientes' not in st.session_state:
