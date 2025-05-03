@@ -58,14 +58,15 @@ with st.form("form_cita"):
     profesional = st.selectbox("Profesional", ["Psic. Ana", "Psic. Luis"])
     agendar = st.form_submit_button("Agendar")
 
-  # Validación de fecha pasada
-        if fecha < datetime.now().date():
-            st.error("No se puede agendar una cita en una fecha pasada.")
-  # Validación de cita duplicada en el mismo día
-        elif any(cita["dni"] == dni_cita and cita["fecha"] == fecha.strftime("%Y-%m-%d") for cita in st.session_state.citas):
-            st.error("Ya existe una cita programada para este paciente en la misma fecha.")
-        else:
-            # Si pasa la validación, agendar la cita
+ if agendar:
+    # Validación de fecha pasada
+    if fecha < datetime.now().date():
+        st.error("No se puede agendar una cita en una fecha pasada.")
+    # Validación de cita duplicada en el mismo día
+    elif any(cita["dni"] == dni_cita and cita["fecha"] == fecha.strftime("%Y-%m-%d") for cita in st.session_state.citas):
+        st.error("Ya existe una cita programada para este paciente en la misma fecha.")
+    else:
+        # Si pasa las validaciones, agendar la cita
         cita = {
             "dni": dni_cita,
             "fecha": fecha.strftime("%Y-%m-%d"),
