@@ -60,8 +60,11 @@ with st.form("form_cita"):
     agendar = st.form_submit_button("Agendar")
 
     if agendar:
+        # Validación de campo "motivo" vacío
+        if not motivo.strip():
+            st.error("El campo 'Motivo' no puede estar vacío. Por favor, ingrese un motivo para la cita.")
         # Validación de fecha pasada
-        if fecha < datetime.now().date():
+        elif fecha < datetime.now().date():
             st.error("No se puede agendar una cita en una fecha pasada.")
         # Validación de cita duplicada en el mismo día
         elif any(cita["dni"] == dni_cita and cita["fecha"] == fecha.strftime("%Y-%m-%d") for cita in st.session_state.citas):
