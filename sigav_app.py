@@ -81,7 +81,7 @@ st.dataframe(pd.DataFrame(st.session_state.citas))
 
 
 if st.button("🔄 Exportar citas a CSV"):
-  if st.session_state.citas:
+    if st.session_state.citas:
         # Crear un DataFrame con las citas
         citas_df = pd.DataFrame(st.session_state.citas)
 
